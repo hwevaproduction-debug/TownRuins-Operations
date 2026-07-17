@@ -170,6 +170,35 @@ function createRouter() {
       navigate(url, false)
     })
 
+    // Handle data-href elements (divs with data-href attribute)
+    window.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement
+      const dataHrefEl = target.closest("[data-href]") as HTMLElement | null
+      if (!dataHrefEl) return
+      if (event.ctrlKey || event.metaKey) return
+      event.preventDefault()
+      
+      const href = dataHrefEl.dataset.href
+      if (!href) return
+      const url = new URL(href, window.location.toString())
+      navigate(url, false)
+    })
+
+    // Handle keyboard navigation for data-href elements
+    window.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return
+      const target = document.activeElement as HTMLElement | null
+      if (!target) return
+      const dataHrefEl = target.closest("[data-href]") as HTMLElement | null
+      if (!dataHrefEl) return
+      event.preventDefault()
+      
+      const href = dataHrefEl.dataset.href
+      if (!href) return
+      const url = new URL(href, window.location.toString())
+      navigate(url, false)
+    })
+
     window.addEventListener("popstate", (event) => {
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return

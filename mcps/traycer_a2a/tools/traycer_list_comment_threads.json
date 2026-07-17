@@ -1,0 +1,41 @@
+{
+  "name": "traycer_list_comment_threads",
+  "description": "List Traycer artifact comment threads for this epic. Use this after reading artifacts so human-authored feedback is visible before editing or responding.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "artifactPaths": {
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Absolute artifact paths. Pass null or omit to list comments for all artifacts in this epic."
+      },
+      "status": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "all",
+              "open",
+              "resolved"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Thread status filter. Defaults to all."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

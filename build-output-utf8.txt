@@ -1,0 +1,35 @@
+﻿
+ Quartz v5.0.0  
+
+Cleaned output directory `public` in 78ms
+Found 101 input files from `content` in 31ms
+Parsing input files using 1 threads
+
+Warning: content/admin/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/business/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/client-handover/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/guides/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/legal/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/moderation/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/operations/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/product/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/reference/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/testing/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/ui/index.md isn't yet tracked by git, dates will be inaccurate
+
+Warning: content/workflows/index.md isn't yet tracked by git, dates will be inaccurate
+Parsed 101 Markdown files in 7s
+Filtered out 0 files in 141╬╝s
+Emitting files
+Emitted 615 files to `public` in 36s
+Done processing 101 files in 43s

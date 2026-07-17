@@ -1,0 +1,26 @@
+{
+  "name": "traycer_list_agents",
+  "description": "List Traycer agents reachable from the current epic.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "scope": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "user",
+              "all"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "List agents for this user ('user') or all agents i.e. belonging to other users as well ('all')."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "traycer_list_epic_workspaces",
+  "description": "List this epic's workspace folders and existing Git worktrees.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

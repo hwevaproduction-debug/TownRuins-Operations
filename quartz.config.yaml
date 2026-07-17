@@ -147,11 +147,38 @@ plugins:
     layout:
       position: left
       priority: 50
+      condition: not-index
   - source: github:quartz-community/graph
-    enabled: true
-    layout:
-      position: right
-      priority: 10
+    enabled: false
+    options:
+      localGraph:
+        drag: true
+        zoom: true
+        depth: 2
+        scale: 1.3
+        repelForce: 0.5
+        centerForce: 0.3
+        linkDistance: 40
+        fontSize: 0.75
+        opacityScale: 1
+        showTags: true
+        removeTags: []
+        focusOnHover: true
+        enableRadial: false
+      globalGraph:
+        drag: true
+        zoom: true
+        depth: -1
+        scale: 1.0
+        repelForce: 0.5
+        centerForce: 0.2
+        linkDistance: 40
+        fontSize: 0.7
+        opacityScale: 1
+        showTags: true
+        removeTags: []
+        focusOnHover: true
+        enableRadial: true
   - source: github:quartz-community/search
     enabled: true
     layout:
@@ -161,20 +188,19 @@ plugins:
       groupOptions:
         grow: true
   - source: github:quartz-community/backlinks
-    enabled: true
-    layout:
-      position: right
-      priority: 50
+    enabled: false
   - source: github:quartz-community/article-title
     enabled: true
     layout:
       position: beforeBody
       priority: 10
+      condition: not-index
   - source: github:quartz-community/content-meta
     enabled: true
     layout:
       position: beforeBody
       priority: 20
+      condition: not-index
   - source: github:quartz-community/tag-list
     enabled: false
     layout:
@@ -186,7 +212,7 @@ plugins:
       position: left
       priority: 10
   - source: github:quartz-community/darkmode
-    enabled: true
+    enabled: false
     layout:
       position: left
       priority: 30
@@ -215,8 +241,10 @@ plugins:
     enabled: true
     options:
       links:
-        GitHub: https://github.com/jackyzha0/quartz
-        Discord Community: https://discord.gg/cRFFHYye7t
+        Documentation Home: /
+        Operations Guide: /operations/
+        Architecture: /architecture/
+        API Reference: /api/
   - source: github:quartz-community/recent-notes
     enabled: false
   - source: github:quartz-community/spacer
@@ -248,6 +276,7 @@ plugins:
       position: beforeBody
       priority: 15
       display: all
+      condition: not-index
 layout:
   groups:
     toolbar:
@@ -260,7 +289,9 @@ layout:
         beforeBody: []
         left: []
         right: []
-    content: {}
+    content:
+      positions:
+        right: []
     folder:
       exclude:
         - reader-mode

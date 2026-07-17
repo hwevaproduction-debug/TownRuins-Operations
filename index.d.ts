@@ -14,3 +14,9 @@ interface CustomEventMap {
 
 type ContentIndex = Record<FullSlug, ContentDetails>
 declare const fetchData: Promise<ContentIndex>
+
+interface Window {
+  canvasData?: unknown
+  spaNavigate?: (url: URL, replace?: boolean) => void
+  addCleanup?: (fn: () => void) => void
+}

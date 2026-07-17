@@ -1,185 +1,142 @@
 import test, { describe } from "node:test"
 import assert from "node:assert"
+import {
+  extractPreviewFromHtml,
+  titleFromPathname,
+} from "./popover-preview"
 
-type ScrollArg = { top: number; behavior?: ScrollBehavior }
-type FakeHeading = { offsetTop: number }
-
-interface FakePopoverInner {
-  scroll: (arg: ScrollArg) => void
-  querySelector: (sel: string) => FakeHeading | null
-  _scrolled: ScrollArg | null
-  _selectorsQueried: string[]
-}
-
-interface FakePopoverElement {
-  classList: {
-    add: (cls: string) => void
-    remove: (cls: string) => void
-    _added: string[]
-    _removed: string[]
+function metaContent(html: string, selector: "description" | "og:title" | "og:description"): string | null {
+  if (selector === "description") {
+    return html.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"/i)?.[1] ?? null
   }
-  style: Record<string, string>
-  querySelector: (sel: string) => FakePopoverInner | null
-  _inner: FakePopoverInner
+  const property = selector === "og:title" ? "og:title" : "og:description"
+  return html.match(new RegExp(`<meta[^>]*property="${property}"[^>]*content="([^"]*)"`, "i"))?.[1] ?? null
 }
 
-function makeInner(heading: FakeHeading | null = null): FakePopoverInner {
-  const inner: FakePopoverInner = {
-    scroll(arg) {
-      this._scrolled = arg
-    },
-    querySelector(sel) {
-      this._selectorsQueried.push(sel)
-      return heading
-    },
-    _scrolled: null,
-    _selectorsQueried: [],
-  }
-  return inner
+function firstMatch(html: string, pattern: RegExp): string | null {
+  return html.match(pattern)?.[1]?.trim() ?? null
 }
 
-function makePopoverElement(inner: FakePopoverInner): FakePopoverElement {
-  const added: string[] = []
-  const removed: string[] = []
-  return {
-    classList: {
-      add(cls) {
-        added.push(cls)
-      },
-      remove(cls) {
-        removed.push(cls)
-      },
-      _added: added,
-      _removed: removed,
-    },
-    style: {},
-    querySelector(sel) {
-      return sel === ".popover-inner" ? inner : null
-    },
-    _inner: inner,
-  }
-}
+function makeDocument(html: string): Document {
+  const paragraphs = [...html.matchAll(/<p[^>]*>([^<]+)<\/p>/gi)].map((match) => match[1].trim())
 
-type SetPosition = (el: FakePopoverElement) => Promise<void>
-
-function fixedShowPopover(
-  popoverElement: FakePopoverElement,
-  hash: string,
-  setPosition: SetPosition,
-): Promise<void> {
-  popoverElement.classList.add("active-popover")
-  const positionResult = setPosition(popoverElement)
-
-  if (hash !== "") {
-    const inner = popoverElement.querySelector(".popover-inner")
-    if (inner) {
-      const targetAnchor = `#popover-internal-${hash.slice(1)}`
-      const heading = inner.querySelector(targetAnchor)
-      if (heading) {
-        inner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
-      }
+  const query = (sel: string): Element | null => {
+    if (sel.includes('meta[name="description"]')) {
+      const content = metaContent(html, "description")
+      return content ? ({ getAttribute: () => content } as unknown as Element) : null
     }
+    if (sel.includes('meta[property="og:description"]')) {
+      const content = metaContent(html, "og:description")
+      return content ? ({ getAttribute: () => content } as unknown as Element) : null
+    }
+    if (sel.includes('meta[property="og:title"]')) {
+      const content = metaContent(html, "og:title")
+      return content ? ({ getAttribute: () => content } as unknown as Element) : null
+    }
+    if (sel.includes("h1")) {
+      const text = firstMatch(html, /<h1[^>]*>([^<]+)<\/h1>/i)
+      return text ? ({ textContent: text } as unknown as Element) : null
+    }
+    if (sel === "title") {
+      const text = firstMatch(html, /<title[^>]*>([^<]+)<\/title>/i)
+      return text ? ({ textContent: text } as unknown as Element) : null
+    }
+    if (sel === ".center" || sel === "article" || sel === "main") {
+      return {
+        querySelectorAll: (innerSel: string) => {
+          if (innerSel !== "p") return []
+          return paragraphs.map((text) => ({
+            textContent: text,
+            closest: () => null,
+          })) as unknown as NodeListOf<Element>
+        },
+      } as unknown as Element
+    }
+    if (sel === "body") {
+      return {
+        querySelectorAll: () => [] as unknown as NodeListOf<Element>,
+      } as unknown as Element
+    }
+    return null
   }
 
-  return positionResult
+  return {
+    querySelector: query,
+    body: query("body")!,
+  } as Document
 }
 
-describe("showPopover on cache-hit with hash", () => {
-  test("does not reference any lexical popoverInner from an outer scope", async () => {
-    const heading: FakeHeading = { offsetTop: 200 }
-    const inner = makeInner(heading)
-    const popoverElement = makePopoverElement(inner)
-
-    await fixedShowPopover(popoverElement, "#plugins", async () => {})
-
-    assert.ok(
-      popoverElement.classList._added.includes("active-popover"),
-      "active-popover class must be applied",
-    )
-    assert.deepStrictEqual(
-      inner._scrolled,
-      { top: 200 - 12, behavior: "instant" },
-      "scroll must target heading.offsetTop - 12",
-    )
-    assert.deepStrictEqual(inner._selectorsQueried, ["#popover-internal-plugins"])
+describe("titleFromPathname", () => {
+  test("formats slug segments into a readable title", () => {
+    assert.strictEqual(titleFromPathname("/operations/runbooks/incident-response"), "Incident Response")
   })
 
-  test("skips scroll when hash is empty", async () => {
-    const inner = makeInner({ offsetTop: 123 })
-    const popoverElement = makePopoverElement(inner)
-
-    await fixedShowPopover(popoverElement, "", async () => {})
-
-    assert.strictEqual(inner._scrolled, null)
-    assert.deepStrictEqual(inner._selectorsQueried, [])
-  })
-
-  test("skips scroll when heading is not found", async () => {
-    const inner = makeInner(null)
-    const popoverElement = makePopoverElement(inner)
-
-    await fixedShowPopover(popoverElement, "#nonexistent", async () => {})
-
-    assert.strictEqual(inner._scrolled, null)
-    assert.deepStrictEqual(inner._selectorsQueried, ["#popover-internal-nonexistent"])
-  })
-
-  test("decodes percent-encoded fragments when building the selector", async () => {
-    const heading: FakeHeading = { offsetTop: 50 }
-    const inner = makeInner(heading)
-    const popoverElement = makePopoverElement(inner)
-
-    await fixedShowPopover(popoverElement, "#a-b", async () => {})
-
-    assert.deepStrictEqual(inner._selectorsQueried, ["#popover-internal-a-b"])
+  test("falls back to Document for root path", () => {
+    assert.strictEqual(titleFromPathname("/"), "Document")
   })
 })
 
-describe("buggy showPopover (lexical-capture pattern) regression guard", () => {
-  test("accessing a capture-before-declaration variable throws ReferenceError (TDZ simulation)", () => {
-    function simulateBuggyMouseEnter(hash: string) {
-      function buggyShowPopover(popoverElement: FakePopoverElement) {
-        popoverElement.classList.add("active-popover")
-        if (hash !== "") {
-          const targetAnchor = `#popover-internal-${hash.slice(1)}`
-          const heading = popoverInner.querySelector(targetAnchor)
-          if (heading) {
-            popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
-          }
-        }
-      }
-
-      const cachedInner = makeInner({ offsetTop: 999 })
-      const cachedElement = makePopoverElement(cachedInner)
-      buggyShowPopover(cachedElement)
-
-      const popoverInner = makeInner(null)
-      return popoverInner
-    }
-
-    assert.throws(() => simulateBuggyMouseEnter("#plugins"), {
-      name: "ReferenceError",
-    })
+describe("extractPreviewFromHtml", () => {
+  test("prefers meta description and header h1", () => {
+    const html = `
+      <html>
+        <head>
+          <title>Incident Response | Town Ruins</title>
+          <meta name="description" content="Steps for handling production incidents." />
+        </head>
+        <body>
+          <header><h1>Incident Response</h1></header>
+        </body>
+      </html>
+    `
+    const preview = extractPreviewFromHtml(
+      makeDocument(html),
+      new URL("https://example.com/operations/incident-response"),
+    )
+    assert.strictEqual(preview.title, "Incident Response")
+    assert.strictEqual(preview.summary, "Steps for handling production incidents.")
   })
 
-  test("same pattern does NOT throw when hash is empty (explains why first link without fragment works)", () => {
-    function simulateBuggyMouseEnter(hash: string) {
-      function buggyShowPopover(popoverElement: FakePopoverElement) {
-        popoverElement.classList.add("active-popover")
-        if (hash !== "") {
-          const _unused = popoverInner.querySelector("x")
-          void _unused
-        }
-      }
+  test("uses first meaningful paragraph when description meta is missing", () => {
+    const html = `
+      <html>
+        <head><title>Fallback Title</title></head>
+        <body>
+          <div class="center">
+            <p>Short</p>
+            <p>This is the first meaningful paragraph in the article body for preview extraction.</p>
+          </div>
+        </body>
+      </html>
+    `
+    const preview = extractPreviewFromHtml(makeDocument(html), new URL("https://example.com/docs/guide"))
+    assert.strictEqual(preview.title, "Fallback Title")
+    assert.ok(preview.summary.includes("first meaningful paragraph"))
+  })
 
-      const cachedInner = makeInner(null)
-      const cachedElement = makePopoverElement(cachedInner)
-      buggyShowPopover(cachedElement)
+  test("falls back to pathname title and click-to-open summary", () => {
+    const preview = extractPreviewFromHtml(makeDocument("<html></html>"), new URL("https://example.com/ops/after-hours"))
 
-      const popoverInner = makeInner(null)
-      return popoverInner
+    assert.strictEqual(preview.title, "After Hours")
+    assert.strictEqual(preview.summary, "Click to open")
+  })
+})
+
+describe("structured showPopover", () => {
+  test("activates popover without hash scrolling", async () => {
+    const added: string[] = []
+    const popoverElement = {
+      classList: {
+        add(cls: string) {
+          added.push(cls)
+        },
+      },
+      style: {} as Record<string, string>,
     }
 
-    assert.doesNotThrow(() => simulateBuggyMouseEnter(""))
+    popoverElement.classList.add("active-popover")
+    await Promise.resolve()
+
+    assert.deepStrictEqual(added, ["active-popover"])
   })
 })

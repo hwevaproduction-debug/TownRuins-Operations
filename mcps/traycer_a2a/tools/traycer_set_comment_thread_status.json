@@ -1,0 +1,48 @@
+{
+  "name": "traycer_set_comment_thread_status",
+  "description": "Set Traycer artifact comment threads to open or resolved after addressing or reopening feedback.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "updates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "artifactPath": {
+              "type": "string",
+              "description": "Absolute artifact path."
+            },
+            "threadIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Comment thread ids scoped to this artifact."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "resolved"
+              ],
+              "description": "Status to set for the listed threads."
+            }
+          },
+          "required": [
+            "artifactPath",
+            "threadIds",
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "description": "Batch of artifact-scoped thread status updates."
+      }
+    },
+    "required": [
+      "updates"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

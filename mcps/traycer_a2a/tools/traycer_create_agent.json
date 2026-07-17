@@ -1,0 +1,120 @@
+{
+  "name": "traycer_create_agent",
+  "description": "Create a child Traycer agent in this epic. Omit surface to inherit from the sender.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Display name for the child agent."
+      },
+      "surface": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "gui",
+              "tui"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Target surface for the child agent."
+      },
+      "harnessId": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Harness to use for the child agent."
+      },
+      "model": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Model to use for the child agent."
+      },
+      "agentMode": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "regular",
+              "epic"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Agent mode override."
+      },
+      "reasoningEffort": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Reasoning effort override for supported models."
+      },
+      "fastMode": {
+        "type": [
+          "boolean",
+          "null"
+        ],
+        "description": "Request fast mode for supported models. Only available for gui surface."
+      },
+      "workspace": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "entries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "workspacePath": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "default": null
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "entries"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Optional workspace paths to bind to the child agent. Use traycer_create_worktree first to create new paths."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -36,19 +36,10 @@ export default (() => {
     )
     const ogImageDefaultPath = `https://${cfg.baseUrl}/static/og-image.png`
 
-    const coreStylesheet = css[0]?.content
-    const coreScript = js.find(
-      (r) => r.loadTime === "beforeDOMReady" && r.contentType === "external",
-    )
-
     return (
       <head>
         <title>{title}</title>
         <meta charSet="utf-8" />
-        {coreStylesheet && <link rel="preload" href={coreStylesheet} as="style" />}
-        {coreScript && coreScript.contentType === "external" && (
-          <link rel="preload" href={coreScript.src} as="script" />
-        )}
         {cfg.theme.cdnCaching && cfg.theme.fontOrigin === "googleFonts" && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -93,7 +84,7 @@ export default (() => {
 
         <link rel="icon" href={iconPath} />
         <meta name="description" content={description} />
-        <meta name="generator" content="Quartz" />
+        <meta name="generator" content="Town Ruins Operations Portal" />
 
         {css.map((resource) => CSSResourceToStyleElement(resource, true))}
         {js

@@ -1,0 +1,18 @@
+{
+  "name": "traycer_get_transcript",
+  "description": "Read another Traycer agent's transcript when available.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "agentId": {
+        "type": "string",
+        "description": "The agent id whose transcript to read."
+      }
+    },
+    "required": [
+      "agentId"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

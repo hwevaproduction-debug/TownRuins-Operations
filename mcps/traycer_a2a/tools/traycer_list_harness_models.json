@@ -1,0 +1,34 @@
+{
+  "name": "traycer_list_harness_models",
+  "description": "List the available models (and available params) for a harness.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "harnessId": {
+        "type": "string",
+        "enum": [
+          "claude",
+          "codex",
+          "opencode",
+          "traycer",
+          "cursor",
+          "grok",
+          "qwen",
+          "kiro",
+          "droid",
+          "kimi",
+          "copilot",
+          "kilocode",
+          "openrouter",
+          "amp"
+        ],
+        "description": "Harness id to list models for."
+      }
+    },
+    "required": [
+      "harnessId"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}
