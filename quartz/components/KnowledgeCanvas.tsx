@@ -12,14 +12,20 @@ const KnowledgeCanvas: QuartzComponent = ({ allFiles }: QuartzComponentProps) =>
     <div class="kc-home">
       <header class="kc-hero" aria-label="Welcome">
         <p class="kc-hero__eyebrow">Town Ruins · Operations Portal</p>
-        <h1 class="kc-hero__title">Where to work, what to open</h1>
+        <h1 class="kc-hero__title">Own and operate Town Ruins</h1>
         <p class="kc-hero__lede">
-          This portal is your map of operations knowledge. Role dashboards give curated entry
-          points; the canvas below shows how hubs and documents relate. Start with a role that
-          matches your job, or explore the canvas to discover docs by cluster.
+          Platform owners start here: Welcome and Quick Start, then daily ops and the admin
+          panel. This portal also maps staff and technical knowledge when you need to go deeper.
+        </p>
+        <p class="kc-hero__sub">
+          Not the owner? Use Client for handover guides, or pick Operations / Developer /
+          Administrator / Business below.
         </p>
         <div class="kc-hero__ctas">
-          <a class="kc-hero__cta kc-hero__cta--primary" href="#knowledge-canvas">
+          <a class="kc-hero__cta kc-hero__cta--primary" href="./owner">
+            Start as owner
+          </a>
+          <a class="kc-hero__cta" href="#knowledge-canvas">
             Explore the canvas
           </a>
           <a class="kc-hero__cta" href="./operations">
@@ -42,13 +48,17 @@ const KnowledgeCanvas: QuartzComponent = ({ allFiles }: QuartzComponentProps) =>
           <div class="kc-hero__panel">
             <h2 class="kc-hero__panel-title">You are here</h2>
             <p>
-              Homepage workspace — not a single runbook. Use it to orient, then open a dashboard
-              or document for deep work.
+              Owner-default workspace. Primary path is the Owner Pack; canvas and other roles
+              stay for discovery — not a single runbook.
             </p>
           </div>
           <div class="kc-hero__panel">
             <h2 class="kc-hero__panel-title">How to navigate</h2>
             <ol class="kc-hero__guide">
+              <li>
+                <strong>Start as owner</strong> — open the Owner Pack for the operating journey
+                (Welcome → Quick Start → daily ops).
+              </li>
               <li>
                 <strong>Hover</strong> a hub — preview appears <em>under the card</em>; move into
                 it and click <em>Open dashboard</em> (or press <kbd>O</kbd>).
@@ -60,8 +70,8 @@ const KnowledgeCanvas: QuartzComponent = ({ allFiles }: QuartzComponentProps) =>
                 <strong>Drag</strong> hubs to swap seats — they snap to the grid, never stack.
               </li>
               <li>
-                <strong>Dashboards</strong> — use the role CTAs above for task-oriented landing
-                pages.
+                <strong>Other roles</strong> — use the tertiary CTAs above (Operations, Developer,
+                Administrator, Client, Business) when you are staff or a non-owner handover reader.
               </li>
             </ol>
           </div>

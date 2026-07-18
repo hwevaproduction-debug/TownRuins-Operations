@@ -22,6 +22,25 @@ export type HubDefinition = {
 
 export const HUB_DEFINITIONS: HubDefinition[] = [
   {
+    id: "owner",
+    contentSlug: "owner",
+    title: "Owner",
+    icon: "🏠",
+    tier: "role",
+    folderPrefix: "owner-pack",
+    pinnedStackSlugs: [
+      "owner-pack/01-welcome",
+      "owner-pack/02-quick-start",
+      "owner-pack/11-daily-operations",
+      "owner-pack/07-admin-panel-guide",
+      "owner-pack/08-faq",
+      "owner-pack/09-troubleshooting",
+      "owner-pack/06-feature-catalogue",
+      "owner-pack/13-release-notes",
+      "owner-pack/14-support-and-warranty",
+    ],
+  },
+  {
     id: "administrator",
     contentSlug: "administrator",
     title: "Administrator",

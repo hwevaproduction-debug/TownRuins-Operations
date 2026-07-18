@@ -67,11 +67,19 @@
 }
 
 .kc-hero__lede {
-  margin: 0 0 20px;
+  margin: 0 0 8px;
   max-width: 52rem;
   font-size: 1.05rem;
   line-height: 1.6;
   color: var(--tr-text-secondary, var(--darkgray));
+}
+
+.kc-hero__sub {
+  margin: 0 0 20px;
+  max-width: 52rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--tr-text-muted, var(--gray));
 }
 
 .kc-hero__ctas {

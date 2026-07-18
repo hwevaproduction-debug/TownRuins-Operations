@@ -198,10 +198,13 @@ describe("buildCanvasModel", () => {
     assert.ok(developerHub)
     assert.equal(developerHub?.slug, "developer")
     assert.ok(developerStack.length >= 4)
-    assert.ok(developerStack.includes("architecture/index"))
-    assert.ok(developerStack.includes("api/index"))
-    assert.ok(developerStack.includes("database/index"))
-    assert.ok(developerStack.includes("reference/repository_guide"))
+    // Pins appear first in declared hub-config order
+    assert.deepEqual(developerStack.slice(0, 4), [
+      "architecture/index",
+      "api/index",
+      "database/index",
+      "reference/repository_guide",
+    ])
 
     // Leaf nodes exist and navigate to real slugs
     for (const slug of [
@@ -215,6 +218,128 @@ describe("buildCanvasModel", () => {
       assert.equal(leaf?.slug, slug)
       assert.equal(leaf?.hubId, "developer")
     }
+  })
+
+  test("pins-first stack order: pins, then hub links, then folder; no double-count", () => {
+    // Folder children that would dominate insertion order without pins-first
+    const folderBulk = Array.from({ length: 8 }, (_, i) =>
+      mockFile({
+        slug: `developer/folder-child-${i}`,
+        frontmatter: { title: `Folder ${i}` },
+      }),
+    )
+
+    const model = buildCanvasModel([
+      mockFile({
+        slug: "developer",
+        frontmatter: { title: "Developer" },
+        // Hub link that overlaps a pin (api) plus a unique hub-only link
+        links: ["api/index", "developer/hub-only-page"],
+      }),
+      ...folderBulk,
+      mockFile({
+        slug: "developer/hub-only-page",
+        frontmatter: { title: "Hub Only" },
+      }),
+      // Pins (also partially reachable via folder or hub links)
+      mockFile({
+        slug: "architecture/index",
+        frontmatter: { title: "Architecture" },
+      }),
+      mockFile({
+        slug: "api/index",
+        frontmatter: { title: "API" },
+      }),
+      mockFile({
+        slug: "database/index",
+        frontmatter: { title: "Database" },
+      }),
+      mockFile({
+        slug: "reference/repository_guide",
+        frontmatter: { title: "Repository Guide" },
+      }),
+    ])
+
+    const stack = model.stacks.developer ?? []
+
+    // 1. Pins first in declared order
+    assert.deepEqual(stack.slice(0, 4), [
+      "architecture/index",
+      "api/index",
+      "database/index",
+      "reference/repository_guide",
+    ])
+
+    // 2. Hub-only link after pins (api pin not double-counted)
+    assert.equal(stack[4], "developer/hub-only-page")
+    assert.equal(stack.filter((s) => s === "api/index").length, 1)
+
+    // 3. Folder children follow, still present
+    assert.ok(stack.includes("developer/folder-child-0"))
+    assert.ok(stack.length <= 20)
+  })
+
+  test("hub without pins still builds stack from hub links then folder children", () => {
+    const model = buildCanvasModel([
+      mockFile({
+        slug: "operations",
+        frontmatter: { title: "Operations" },
+        links: ["operations/operations_runbook"],
+      }),
+      mockFile({
+        slug: "operations/operations_runbook",
+        frontmatter: { title: "Operations Runbook" },
+      }),
+      mockFile({
+        slug: "operations/deployment",
+        frontmatter: { title: "Deployment" },
+      }),
+      mockFile({
+        slug: "operations/monitoring",
+        frontmatter: { title: "Monitoring" },
+      }),
+    ])
+
+    const stack = model.stacks.operations ?? []
+    // Hub link first (no pins on operations hub)
+    assert.equal(stack[0], "operations/operations_runbook")
+    // Folder children after (runbook not double-counted if also a folder child)
+    assert.ok(stack.includes("operations/deployment"))
+    assert.ok(stack.includes("operations/monitoring"))
+    assert.equal(
+      stack.filter((s) => s === "operations/operations_runbook").length,
+      1,
+    )
+  })
+
+  test("pins-first still enforces max stack children of 20", () => {
+    const folderBulk = Array.from({ length: 25 }, (_, i) =>
+      mockFile({
+        slug: `developer/bulk-${i}`,
+        frontmatter: { title: `Bulk ${i}` },
+      }),
+    )
+
+    const model = buildCanvasModel([
+      mockFile({ slug: "developer", frontmatter: { title: "Developer" } }),
+      ...folderBulk,
+      mockFile({ slug: "architecture/index", frontmatter: { title: "Architecture" } }),
+      mockFile({ slug: "api/index", frontmatter: { title: "API" } }),
+      mockFile({ slug: "database/index", frontmatter: { title: "Database" } }),
+      mockFile({
+        slug: "reference/repository_guide",
+        frontmatter: { title: "Repository Guide" },
+      }),
+    ])
+
+    const stack = model.stacks.developer ?? []
+    assert.equal(stack.length, 20)
+    assert.deepEqual(stack.slice(0, 4), [
+      "architecture/index",
+      "api/index",
+      "database/index",
+      "reference/repository_guide",
+    ])
   })
 
   test("domain hubs resolve contentSlug to folder-note pages for navigation", () => {

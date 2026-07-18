@@ -148,35 +148,41 @@ function buildStacks(
   folderPrefix: string,
   pinnedStackSlugs: string[] = [],
 ): string[] {
-  const children = new Set<string>()
+  const ordered: string[] = []
+  const seen = new Set<string>()
   const hubNorm = normalizeSlug(hubContentSlug)
 
-  for (const [slug] of filesBySlug) {
-    if (normalizeSlug(slug) === hubNorm) continue
-    const prefix = `${folderPrefix}/`
-    if (slug.startsWith(prefix) && slugDepth(slug) === 2) {
-      children.add(slug)
-    }
+  const tryAdd = (slug: string) => {
+    const norm = normalizeSlug(slug)
+    if (norm === hubNorm || seen.has(norm)) return
+    seen.add(norm)
+    ordered.push(slug)
   }
 
+  // 1. Pins in config order (resolved, deduped)
+  for (const pin of pinnedStackSlugs) {
+    const resolved = resolveSlugString(filesBySlug, pin)
+    if (resolved) tryAdd(resolved)
+  }
+
+  // 2. Hub page outbound links not already included
   const hubFile = resolveFileRecord(filesBySlug, hubContentSlug)
   if (hubFile) {
     for (const link of hubFile.links) {
       const resolved = resolveSlugString(filesBySlug, link)
-      if (resolved && normalizeSlug(resolved) !== hubNorm) {
-        children.add(resolved)
-      }
+      if (resolved) tryAdd(resolved)
     }
   }
 
-  for (const pin of pinnedStackSlugs) {
-    const resolved = resolveSlugString(filesBySlug, pin)
-    if (resolved && normalizeSlug(resolved) !== hubNorm) {
-      children.add(resolved)
+  // 3. Remaining folder depth-2 children under folderPrefix
+  const prefix = `${folderPrefix}/`
+  for (const [slug] of filesBySlug) {
+    if (slug.startsWith(prefix) && slugDepth(slug) === 2) {
+      tryAdd(slug)
     }
   }
 
-  return [...children].slice(0, MAX_STACK_CHILDREN)
+  return ordered.slice(0, MAX_STACK_CHILDREN)
 }
 
 export function buildCanvasModel(allFiles: QuartzPluginData[]): CanvasModel {
