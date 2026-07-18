@@ -1,22 +1,20 @@
 // node scripts/check-internal-links.mjs
-/**
- * OE-05/OE-06: Inventory internal links in content/**/*.md and report unresolved targets.
- *
- * - Walks content/**/*.md (Node stdlib only)
- * - Extracts href="..." / href='...' (skips http(s), mailto, bare #anchors)
- * - Extracts markdown links [text](target) (skips images ![alt](...))
- * - Extracts [[wikilinks]]
- * - Builds known slug set from content paths (lowercase, spaces→-, folder-note rewrite)
- * - Resolves relative targets against the source file directory
- * - Emits JSON report to stdout; optional --csv / --out
- * - Exit 1 if any unresolved internal links are found
- *
- * Usage:
- *   node scripts/check-internal-links.mjs
- *   node scripts/check-internal-links.mjs --csv
- *   node scripts/check-internal-links.mjs --out scripts/out/internal-links.json
- *   node scripts/check-internal-links.mjs --quiet
- */
+// OE-05/OE-06: Inventory internal links under content/ (all .md files) and report unresolved targets.
+//
+// - Walks content markdown files recursively (Node stdlib only)
+// - Extracts href="..." / href='...' (skips http(s), mailto, bare #anchors)
+// - Extracts markdown links [text](target) (skips images ![alt](...))
+// - Extracts [[wikilinks]]
+// - Builds known slug set from content paths (lowercase, spaces→-, folder-note rewrite)
+// - Resolves relative targets against the source file directory
+// - Emits JSON report to stdout; optional --csv / --out
+// - Exit 1 if any unresolved internal links are found
+//
+// Usage:
+//   node scripts/check-internal-links.mjs
+//   node scripts/check-internal-links.mjs --csv
+//   node scripts/check-internal-links.mjs --out scripts/out/internal-links.json
+//   node scripts/check-internal-links.mjs --quiet
 
 import fs from "node:fs"
 import path from "node:path"

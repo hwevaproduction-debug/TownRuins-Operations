@@ -305,6 +305,44 @@ describe("link strategies", () => {
       assert.strictEqual(path.transformLink(cur, "a/b/index", opts), "./a/b/")
       assert.strictEqual(path.transformLink(cur, "index", opts), "./")
     })
+
+    test("same-folder preference for colliding basenames (admin_guide)", () => {
+      const collisionOpts: TransformOptions = {
+        strategy: "shortest",
+        allSlugs: [
+          "admin/index",
+          "admin/admin_guide",
+          "guides/index",
+          "guides/admin_guide",
+          "legal/index",
+          "legal/readme",
+          "readme",
+        ] as FullSlug[],
+      }
+      // From folder notes (…/index), resolveRelative goes via pathToRoot ("..")
+      // then re-enters the folder — so href is ../folder/page, not bare ./page.
+      assert.strictEqual(
+        path.transformLink("admin/index" as FullSlug, "./ADMIN_GUIDE", collisionOpts),
+        "../admin/admin_guide",
+      )
+      assert.strictEqual(
+        path.transformLink("guides/index" as FullSlug, "./admin_guide", collisionOpts),
+        "../guides/admin_guide",
+      )
+      // Must not collapse to the other folder's colliding basename:
+      assert.notStrictEqual(
+        path.transformLink("admin/index" as FullSlug, "./admin_guide", collisionOpts),
+        "../guides/admin_guide",
+      )
+      assert.strictEqual(
+        path.transformLink("legal/index" as FullSlug, "./README", collisionOpts),
+        "../legal/readme",
+      )
+      assert.notStrictEqual(
+        path.transformLink("legal/index" as FullSlug, "./readme", collisionOpts),
+        "../readme",
+      )
+    })
   })
 
   describe("relative", () => {
