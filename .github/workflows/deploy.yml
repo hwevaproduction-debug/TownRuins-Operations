@@ -47,6 +47,10 @@ jobs:
         run: node ./quartz/bootstrap-cli.mjs plugin install
       - name: Build Quartz
         run: node ./quartz/bootstrap-cli.mjs build
+      # Durable hub-collision gate (content absolute hubs + data-slug asserts).
+      # Do not gate on full check:links (monorepo source maps fail inventory).
+      - name: Assert hub data-slugs
+        run: npm run check:hub-slugs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
