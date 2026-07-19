@@ -578,9 +578,19 @@ button.tr-surface,
       &:last-child {
         border-bottom: none;
       }
+        a {
+        color: var(#fff);
+        font-weight: $semiBoldWeight;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: color var(--tr-transition);
 
-      a {
-        color: var(--tr-primary);
+        &:hover {
+          color: var(--tr-primary-light);
+        }
+      }
+      a.kc-hero__cta--primary {
+        color: var(#fff);
         font-weight: $semiBoldWeight;
         text-decoration: none;
         font-size: 0.95rem;

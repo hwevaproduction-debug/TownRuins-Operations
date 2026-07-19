@@ -96,7 +96,7 @@
   border-radius: 999px;
   border: 1px solid var(--tr-border, var(--lightgray));
   background: var(--tr-surface, #fff);
-  color: #fff;
+  color: var(--tr-primary-light, var(--secondary));
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
