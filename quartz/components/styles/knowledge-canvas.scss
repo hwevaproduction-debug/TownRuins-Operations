@@ -88,7 +88,16 @@
   gap: 10px;
   margin-bottom: 20px;
 }
+.kc-hero__cta--primary {
+  background: #284B63;
+  border-color: transparent;
+  color: #fff;
 
+  &:hover {
+    background: #1f3a50;
+    color: #fff;
+  }
+}
 .kc-hero__cta {
   display: inline-flex;
   align-items: center;
@@ -107,7 +116,7 @@
   }
 
   &--primary {
-    background: var(--mown, var(--mown));
+    background: var(--tr-primary, var(--secondary));
     border-color: transparent;
     color: #fff;
 
