@@ -22,7 +22,7 @@ const KnowledgeCanvas: QuartzComponent = ({ allFiles }: QuartzComponentProps) =>
           Administrator / Business below.
         </p>
         <div class="kc-hero__ctas">
-          <a class="kc-hero__cta kc-hero__cta--primary" href="./owner">
+          <a class="kc-hero__cta kc-hero__cta--primary" style="color:white;" href="./owner">
             Start as owner
           </a>
           <a class="kc-hero__cta" href="#knowledge-canvas">
@@ -56,7 +56,7 @@ const KnowledgeCanvas: QuartzComponent = ({ allFiles }: QuartzComponentProps) =>
             <h2 class="kc-hero__panel-title">How to navigate</h2>
             <ol class="kc-hero__guide">
               <li>
-                <strong>Start as owner</strong> — open the Owner Pack for the operating journey
+                <strong >Start as owner</strong> — open the Owner Pack for the operating journey
                 (Welcome → Quick Start → daily ops).
               </li>
               <li>
