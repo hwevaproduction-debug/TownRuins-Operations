@@ -6,6 +6,7 @@
 
 // --- Brand Tokens -----------------------------------------------------------
 :root {
+  --mown: #fff;
   --tr-primary: #284b63;
   --tr-primary-light: #3a6382;
   --tr-accent: #84a59d;
@@ -579,7 +580,7 @@ button.tr-surface,
         border-bottom: none;
       }
         a {
-        color: var(#fff);
+        color: var(--mown);
         font-weight: $semiBoldWeight;
         text-decoration: none;
         font-size: 0.95rem;
@@ -589,8 +590,8 @@ button.tr-surface,
           color: var(--tr-primary-light);
         }
       }
-      .kc-hero__cta--primary {
-        color: var(#fff);
+      a.kc-hero__cta--primary {
+        color: var(--mown);
         font-weight: $semiBoldWeight;
         text-decoration: none;
         font-size: 0.95rem;
