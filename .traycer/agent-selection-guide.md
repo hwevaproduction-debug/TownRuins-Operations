@@ -4,8 +4,7 @@
 
 Use:
 
-- codex harness
-- latest GPT model
+-free models
 - high reasoning effort
 
 In the handoff:
@@ -21,8 +20,7 @@ The implementation skill is mandatory.
 
 Use:
 
-- codex harness
-- latest GPT model
+-free models
 - high reasoning effort
 
 In the handoff:
