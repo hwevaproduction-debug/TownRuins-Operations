@@ -21,9 +21,12 @@ function describeFile(file?: QuartzPluginData): string {
   return ""
 }
 
-function slugToHref(slug: string): string {
-  if (!slug || slug === "index") return "/"
-  return `/${slug}`
+function slugToHref(slug: string, basePath: string): string {
+  const normalizedBasePath = basePath.replace(/\/$/, "")
+  if (!slug || slug === "index") {
+    return normalizedBasePath || "/"
+  }
+  return `${normalizedBasePath}/${slug}`.replace(/\/\/?/g, "/").replace(/([^:]\/\/)/g, "$1")
 }
 
 function categoryFromSlug(slug: string): string {
@@ -73,9 +76,10 @@ function collectRelatedCards(
   return cards.slice(0, 8)
 }
 
-const RelatedCards: QuartzComponent = ({ fileData, allFiles }: QuartzComponentProps) => {
+const RelatedCards: QuartzComponent = ({ cfg, fileData, allFiles }: QuartzComponentProps) => {
   const cards = collectRelatedCards(fileData, allFiles)
   if (cards.length === 0) return null
+  const basePath = cfg.baseUrl ? new URL(`https://${cfg.baseUrl}`).pathname.replace(/\/$/, "") : ""
 
   return (
     <section class="kc-related-section">
@@ -85,7 +89,7 @@ const RelatedCards: QuartzComponent = ({ fileData, allFiles }: QuartzComponentPr
           <a
             key={card.slug}
             class="tr-surface tr-surface--md tr-related-card"
-            href={slugToHref(card.slug)}
+            href={slugToHref(card.slug, basePath)}
           >
             <span class="tr-surface__icon" aria-hidden="true">
               📄

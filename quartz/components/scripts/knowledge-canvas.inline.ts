@@ -97,10 +97,18 @@ function categoryLabel(node: CanvasNode): string {
 }
 
 function slugToPath(slug: string): string {
-  if (!slug || slug === "index") return "/"
+  const basePath = document.body.dataset.basepath ?? ""
+  const prefix = basePath.replace(/\/$/, "")
+
+  const prefixPath = (path: string): string => {
+    if (!prefix) return path
+    return prefix + path
+  }
+
+  if (!slug || slug === "index") return prefixPath("/")
   let path = slug.startsWith("/") ? slug : `/${slug}`
   if (path.endsWith("/index")) path = `${path.slice(0, -"/index".length)}/`
-  return path
+  return prefixPath(path)
 }
 
 function relatedCountFor(node: CanvasNode, edges: CanvasEdge[]): number {

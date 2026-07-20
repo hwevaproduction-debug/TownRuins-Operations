@@ -238,7 +238,7 @@ GET https://api.townruins.com/api/v1 Expected: 200 {"status":"ok","message":"Tow
 
 ### ST-15: Admin Login
 
-1. Log in with admin credentials (`admin@demo.com` / `demo1234` in demo; production credentials differ)
+1. Log in with admin credentials (`` / `demo1234` in demo; production credentials differ)
 2. Navigate to admin dashboard
 3. Verify: user list, listing moderation, and dispute management are accessible
 
